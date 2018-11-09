@@ -2,7 +2,7 @@ clear all
 %close all
 folder = uigetdir();
 set(0,'defaultAxesFontName','Arial');
-set(0,'defaultAxesFontSize',20);
+set(0,'defaultAxesFontSize',10);
 allL = [];
 allF = [];
 allEx = [];
@@ -10,7 +10,6 @@ ColOrd = get(gca,'ColorOrder');
 leading_edge=@(x,v)((x(:) > v & circshift(x(:),[1 0]) < v));
 %%
 d = dir([folder filesep '*-motion.csv']);
-d = d(3);
 for i = 1:length(d)
     ex = strrep(d(i).name, '-motion.csv','');
     disp(ex);
@@ -103,7 +102,7 @@ for i = 1:length(d)
 
     %% Compute average curve
     figure(1);
-    subplot(2*length(d),1,2*i-1);
+    subplot(length(d),1,i);
     %subplot(2,2,i);
     % accumulators for storing the average curves
     acc0=[];
@@ -131,23 +130,19 @@ for i = 1:length(d)
                 acc2(k,1:length(tidx)) = t(tidx) - tpulsec(k);
             end
         end
-    end
-    plot(sum(acc2) ./ sum(acc0), sum(acc1)./sum(acc0), 'k', 'linewidth', 4);        
+    end    
+    plot(sum(acc2) ./ sum(acc0), sum(acc1)./sum(acc0), 'k', 'linewidth', 4);  
+    boxplot(gca,L,'orientation','horizontal','positions',1.1*max(y),'color',[0 0 0],'widths',0.05)
     hold off
-    axis([0 1 0 max(y)]);
+    axis([0 0.3 -0.05 1.2*max(y)]);
     %title(sprintf('Stimulation frequency: %.2fHz Latency:%.2fms', pulseFreq, 1000*median(L(L~=-1))),'interpreter','none')
     xlabel('Latency [s]');
-    ylabel('Motion [a.u.]');
-    xlim([0 1])
+    ylabel('Displacement [a.u.]');        
     box off
+    set(gca,'xtick',[0 0.1 0.2 0.3])
     
     
 
-    subplot(2*length(d),1,2*i);   
-    datL = L(L~=-1);
-    boxplot(datL,'orientation','horizontal')
-    xlim([0 1])
-    box off
 
     %% plot the overall signal
     idx = L > 0;
